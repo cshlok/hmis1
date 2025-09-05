@@ -6,7 +6,7 @@ python-jose[cryptography]==3.3.0
 prometheus-fastapi-instrumentator==7.0.0
 psycopg2-binary==2.9.10
 fastapi-limiter==0.1.6
-redis==5.0.8
+redis==6.4.0
 cryptography==43.0.3
 opentelemetry-distro
 opentelemetry-exporter-otlp
