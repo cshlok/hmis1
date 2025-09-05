@@ -1,0 +1,48 @@
+from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
+from .models import Appointment
+
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = [
+            "id",
+            "hospital",
+            "patient",
+            "doctor",
+            "start_at",
+            "end_at",
+            "reason",
+            "status",
+            "notes",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+    def validate(self, attrs):
+        start_at = attrs.get("start_at") or getattr(self.instance, "start_at", None)
+        end_at = attrs.get("end_at") or getattr(self.instance, "end_at", None)
+        if start_at and end_at and end_at <= start_at:
+            raise serializers.ValidationError("end_at must be after start_at")
+        return attrs
+
+    def create(self, validated_data):
+        instance = Appointment(**validated_data)
+        try:
+            instance.full_clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict or e.messages) from None
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        try:
+            instance.full_clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict or e.messages) from None
+        instance.save()
+        return instance

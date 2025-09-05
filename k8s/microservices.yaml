@@ -1,0 +1,711 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-estimator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: price-estimator
+  template:
+    metadata:
+      labels:
+        app: price-estimator
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-price-estimator:latest
+          ports:
+            - containerPort: 9007
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9007
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9007
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: price-estimator
+spec:
+  selector:
+    app: price-estimator
+  ports:
+    - port: 9007
+      targetPort: 9007
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bed-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bed-management
+  template:
+    metadata:
+      labels:
+        app: bed-management
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-bed-management:latest
+          ports:
+            - containerPort: 9008
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9008
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9008
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bed-management
+spec:
+  selector:
+    app: bed-management
+  ports:
+    - port: 9008
+      targetPort: 9008
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: triage
+  template:
+    metadata:
+      labels:
+        app: triage
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-triage:latest
+          ports:
+            - containerPort: 9009
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9009
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9009
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: triage
+spec:
+  selector:
+    app: triage
+  ports:
+    - port: 9009
+      targetPort: 9009
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: analytics-service
+  template:
+    metadata:
+      labels:
+        app: analytics-service
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-analytics:latest
+          ports:
+            - containerPort: 9010
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9010
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9010
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+spec:
+  selector:
+    app: analytics-service
+  ports:
+    - port: 9010
+      targetPort: 9010
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notifications
+  template:
+    metadata:
+      labels:
+        app: notifications
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-notifications:latest
+          ports:
+            - containerPort: 9011
+          env:
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: smtp_host
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: smtp_user
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: smtp_password
+            - name: SMTP_SENDER
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: smtp_sender
+            - name: SMS_PROVIDER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: sms_url
+            - name: SMS_PROVIDER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: sms_token
+            - name: FCM_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-secrets
+                  key: fcm_key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9011
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9011
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications
+spec:
+  selector:
+    app: notifications
+  ports:
+    - port: 9011
+      targetPort: 9011
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radiology
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: radiology
+  template:
+    metadata:
+      labels:
+        app: radiology
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-radiology:latest
+          ports:
+            - containerPort: 9012
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9012
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9012
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radiology
+spec:
+  selector:
+    app: radiology
+  ports:
+    - port: 9012
+      targetPort: 9012
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: feedback
+  template:
+    metadata:
+      labels:
+        app: feedback
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-feedback:latest
+          ports:
+            - containerPort: 9013
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9013
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9013
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feedback
+spec:
+  selector:
+    app: feedback
+  ports:
+    - port: 9013
+      targetPort: 9013
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: consent
+  template:
+    metadata:
+      labels:
+        app: consent
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-consent:latest
+          ports:
+            - containerPort: 9014
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9014
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9014
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consent
+spec:
+  selector:
+    app: consent
+  ports:
+    - port: 9014
+      targetPort: 9014
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: er-alerts
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: er-alerts
+  template:
+    metadata:
+      labels:
+        app: er-alerts
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-er-alerts:latest
+          ports:
+            - containerPort: 9016
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9016
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9016
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: er-alerts
+spec:
+  selector:
+    app: er-alerts
+  ports:
+    - port: 9016
+      targetPort: 9016
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ot-scheduling
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ot-scheduling
+  template:
+    metadata:
+      labels:
+        app: ot-scheduling
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-ot-scheduling:latest
+          ports:
+            - containerPort: 9017
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9017
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9017
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ot-scheduling
+spec:
+  selector:
+    app: ot-scheduling
+  ports:
+    - port: 9017
+      targetPort: 9017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: graphql-gateway
+  template:
+    metadata:
+      labels:
+        app: graphql-gateway
+    spec:
+      containers:
+        - name: svc
+          image: ghcr.io/yourorg/newhms-graphql-gateway:latest
+          ports:
+            - containerPort: 9020
+          env:
+            - name: ANALYTICS_URL
+              value: http://analytics-service:9010
+            - name: TRIAGE_URL
+              value: http://triage:9009
+            - name: RADIOLOGY_URL
+              value: http://radiology:9012
+            - name: BED_URL
+              value: http://bed-management:9008
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphql-gateway
+spec:
+  selector:
+    app: graphql-gateway
+  ports:
+    - port: 9020
+      targetPort: 9020
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hms-ingress-microservices
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/estimator/
+            pathType: Prefix
+            backend:
+              service:
+                name: price-estimator
+                port:
+                  number: 9007
+          - path: /api/bed/
+            pathType: Prefix
+            backend:
+              service:
+                name: bed-management
+                port:
+                  number: 9008
+          - path: /api/triage/
+            pathType: Prefix
+            backend:
+              service:
+                name: triage
+                port:
+                  number: 9009
+          - path: /api/analytics/
+            pathType: Prefix
+            backend:
+              service:
+                name: analytics-service
+                port:
+                  number: 9010
+          - path: /api/notifications/
+            pathType: Prefix
+            backend:
+              service:
+                name: notifications
+                port:
+                  number: 9011
+          - path: /api/radiology/
+            pathType: Prefix
+            backend:
+              service:
+                name: radiology
+                port:
+                  number: 9012
+          - path: /api/feedback/
+            pathType: Prefix
+            backend:
+              service:
+                name: feedback
+                port:
+                  number: 9013
+          - path: /api/consent/
+            pathType: Prefix
+            backend:
+              service:
+                name: consent
+                port:
+                  number: 9014
+          - path: /api/er/
+            pathType: Prefix
+            backend:
+              service:
+                name: er-alerts
+                port:
+                  number: 9016
+          - path: /api/ot/
+            pathType: Prefix
+            backend:
+              service:
+                name: ot-scheduling
+                port:
+                  number: 9017
+          - path: /graphql
+            pathType: Prefix
+            backend:
+              service:
+                name: graphql-gateway
+                port:
+                  number: 9020
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prom-config
+              mountPath: /etc/prometheus
+      volumes:
+        - name: prom-config
+          configMap:
+            name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'price_estimator'
+        static_configs:
+          - targets: ['price-estimator:9007']
+      - job_name: 'bed_management'
+        static_configs:
+          - targets: ['bed-management:9008']
+      - job_name: 'triage'
+        static_configs:
+          - targets: ['triage:9009']
+      - job_name: 'analytics_service'
+        static_configs:
+          - targets: ['analytics-service:9010']
+      - job_name: 'notifications'
+        static_configs:
+          - targets: ['notifications:9011']
+      - job_name: 'radiology'
+        static_configs:
+          - targets: ['radiology:9012']
+      - job_name: 'feedback'
+        static_configs:
+          - targets: ['feedback:9013']
+      - job_name: 'consent'
+        static_configs:
+          - targets: ['consent:9014']
+      - job_name: 'er_alerts'
+        static_configs:
+          - targets: ['er-alerts:9016']
+      - job_name: 'ot_scheduling'
+        static_configs:
+          - targets: ['ot-scheduling:9017']
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana-oss:latest
+          env:
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Viewer
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000

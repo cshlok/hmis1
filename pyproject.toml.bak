@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff]
+select = ['A', 'B', 'C', 'E', 'F']
+ignore = []
+
+[tool.isort]
+profile = "black"
