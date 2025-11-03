@@ -19,14 +19,14 @@
     "axios": "^1.7.9",
     "axios-retry": "^4.5.0",
     "notistack": "^3.0.1",
-    "react": "^18.3.1",
+    "react": "^19.1.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "recharts": "^2.13.2",
     "vite-plugin-pwa": "^0.21.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.12",
+    "@types/react": "^19.1.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.14.0",
