@@ -6,4 +6,4 @@ opentelemetry-instrumentation-fastapi
 opentelemetry-instrumentation-requests
 SQLAlchemy==2.0.36
 psycopg2-binary==2.9.10
-requests==2.32.3
+requests==2.32.5
